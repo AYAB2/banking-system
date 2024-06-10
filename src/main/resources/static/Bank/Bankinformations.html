@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Information</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #e3f2fd;
+        }
+
+        .card {
+            margin-top: 20px;
+        }
+
+        .card-title {
+            color: #007bff;
+        }
+
+        .list-group-item {
+            border-color: #dee2e6;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html">Banking System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/AdminView.html">Admin</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Bank/Bankinformations.html">Bank</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/User/UserView.html">User</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountList.html">BankAccount</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountOperations.html">BankAccount Operations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankOperationsHistory.html">BankAccount Operations History</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <h2 class="mt-4 mb-4">Bank Information</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Bank Name</h5>
+            <p class="card-text">Moroccan Bank</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Country: Morocco</li>
+            <li class="list-group-item">Phone: +212 6 00 00 00 00</li>
+            <li class="list-group-item">Email: MoroccanBank@gmail.com</li>
+            <li class="list-group-item">Service: Withdrawal, Transfers, Open Bank Account</li>
+            <li class="list-group-item">Address: 3695+P72, Salé</li>
+        </ul>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

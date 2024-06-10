@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Admin</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html">Banking System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/AdminView.html">Admin</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Bank/Bankinformations.html">Bank</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/User/UserView.html">User</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountList.html">BankAccount</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountOperations.html">BankAccount Operations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankOperationsHistory.html">BankAccount Operations History</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div class="container">
+    <h2>Add Admin</h2>
+    <form id="adminForm">
+        <div class="form-group">
+            <label for="adminUsername">Username:</label>
+            <input type="text" class="form-control" id="adminUsername" placeholder="Enter username">
+        </div>
+        <div class="form-group">
+            <label for="adminPassword">Password:</label>
+            <input type="password" class="form-control" id="adminPassword" placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="submitForm(event)">Submit</button>
+        <button type="reset" class="btn btn-secondary" onclick="window.location.href='AdminView.html'" >Cancel</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function submitForm(event) {
+        event.preventDefault();
+        const formData = {
+            username: document.getElementById('adminUsername').value,
+            password: document.getElementById('adminPassword').value
+        };
+        fetch('http://localhost:9092/admin/addadmin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(admin => {
+                alert('Admin created successfully');
+                window.location.href = 'AdminView.html';
+            })
+            .catch(error => {
+                alert('Error occurred while creating admin');
+                console.error('Error:', error);
+            });
+    }
+</script>
+</body>
+</html>

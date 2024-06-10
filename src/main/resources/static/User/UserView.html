@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User View</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .navbar-nav .nav-item .nav-link {
+            color: #555;
+            transition: color 0.3s ease;
+        }
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #007bff;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .table {
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .table th {
+            background-color: #007bff;
+            color: white;
+        }
+        .table td, .table th {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html">Banking System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/AdminView.html">Admin</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Bank/Bankinformations.html">Bank</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/User/UserView.html">User</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountList.html">BankAccount</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountOperations.html">BankAccount Operations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankOperationsHistory.html">History</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>User List</h2>
+    <button onclick="window.location.href='AddUser.html'" class="btn btn-primary">Add User</button>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Address</th>
+        </tr>
+        </thead>
+        <tbody id="userList">
+        <!-- User data will go here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Fetch all users and populate the table
+    fetch('/user/getallusers')
+        .then(response => response.json())
+        .then(users => {
+            const userList = document.getElementById('userList');
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.firstname}</td>
+                    <td>${user.lastname}</td>
+                    <td>${user.address}</td>
+                    <td><button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button></td>
+                `;
+                userList.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+
+    function deleteUser(id) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            fetch(`/user/delete/${id}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Reload the page
+                        location.reload();
+                    } else {
+                        console.error('Error:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

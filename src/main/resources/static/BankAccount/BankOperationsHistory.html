@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Operation History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .navbar-nav .nav-item .nav-link {
+            color: #555;
+            transition: color 0.3s ease;
+        }
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #007bff;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        .table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html">Banking System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/AdminView.html">Admin</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Bank/Bankinformations.html">Bank</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/User/UserView.html">User</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountList.html">BankAccount</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountOperations.html">BankAccount Operations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankOperationsHistory.html">History</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Operation History</h2>
+    <form id="historyForm">
+        <div class="form-group">
+            <label for="accountId">Account ID:</label>
+            <input type="number" class="form-control" id="accountId" placeholder="Enter account ID" required>
+        </div>
+        <button type="submit" class="btn btn-primary">View History</button>
+    </form>
+    <div id="errorMessage" class="alert alert-danger mt-3" style="display: none;"></div>
+    <table class="table table-striped mt-4" id="historyTable" style="display: none;">
+        <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Operation Type</th>
+            <th>Amount</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody id="historyBody">
+        <!-- Operation history will be appended here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById('historyForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const accountId = document.getElementById('accountId').value;
+        const errorMessage = document.getElementById('errorMessage');
+        const historyTable = document.getElementById('historyTable');
+        const historyBody = document.getElementById('historyBody');
+
+        fetch(`http://localhost:9092/bankAccount/history/${accountId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.length === 0) {
+                    errorMessage.textContent = 'No operation history found for this account.';
+                    errorMessage.style.display = 'block';
+                    historyTable.style.display = 'none';
+                    return;
+                }
+
+                errorMessage.style.display = 'none';
+                historyTable.style.display = 'table';
+                historyBody.innerHTML = '';
+
+                data.forEach(operation => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(operation.timestamp).toLocaleString()}</td>
+                        <td>${operation.operationType}</td>
+                        <td>${operation.amount}</td>
+                        <td>${operation.description}</td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                errorMessage.textContent = 'Error fetching operation history: ' + error.message;
+                errorMessage.style.display = 'block';
+                historyTable.style.display = 'none';
+            });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Account List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html">Banking System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/AdminView.html">Admin</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Bank/Bankinformations.html">Bank</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/User/UserView.html">User</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountList.html">BankAccount</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountOperations.html">BankAccount Operations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankOperationsHistory.html">BankAccount Operations History</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<div class="container">
+    <h2>Bank Account List</h2>
+    <!-- Add Bank Account button -->
+    <button onclick="window.location.href='AddBankAccount.html'" class="btn btn-primary mb-3">Add Bank Account</button>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Account Number</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Balance</th>
+            <th>Phone Number</th>
+            <th>Address</th>
+        </tr>
+        </thead>
+        <tbody id="bankAccountList">
+        <!-- Bank account data will go here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Fetch all bank accounts and populate the table
+    fetch('http://localhost:9092/bankAccount/getallbankAccounts')
+        .then(response => response.json())
+        .then(bankAccounts => {
+            const bankAccountList = document.getElementById('bankAccountList');
+            bankAccounts.forEach(bankAccount => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${bankAccount.id}</td>
+                    <td>${bankAccount.accountNumber}</td>
+                    <td>${bankAccount.firstName}</td>
+                    <td>${bankAccount.lastName}</td>
+                    <td>${bankAccount.balance}</td>
+                    <td>${bankAccount.phoneNumber}</td>
+                    <td>${bankAccount.address}</td>
+                    <td><button onclick="editAccount(${bankAccount.id})" class="btn btn-primary">Edit</button></td>
+                    <td><button onclick="deleteAccount(${bankAccount.id})" class="btn btn-danger">Delete</button></td>
+                `;
+                bankAccountList.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+
+    // Edit a bank account
+    function editAccount(id) {
+        window.location.href = `EditBankAccount.html?id=${id}`;
+    }
+
+    // Delete a bank account
+    function deleteAccount(id) {
+        if (confirm('Are you sure you want to delete this account?')) {
+            fetch(`http://localhost:9092/bankAccount/deleteBankAccount/${id}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Account deleted successfully');
+                        location.reload();  // Reload the page to update the table
+                    } else {
+                        alert('Error occurred while deleting account');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

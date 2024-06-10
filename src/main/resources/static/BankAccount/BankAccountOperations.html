@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bank Account Operations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .navbar-nav .nav-item .nav-link {
+            color: #555;
+            transition: color 0.3s ease;
+        }
+        .navbar-nav .nav-item .nav-link:hover {
+            color: #007bff;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/index.html">Banking System</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/Admin/AdminView.html">Admin</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/Bank/Bankinformations.html">Bank</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/User/UserView.html">User</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountList.html">BankAccount</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankAccountOperations.html">Operations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/BankAccount/BankOperationsHistory.html">History</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Withdraw</h2>
+    <form id="withdrawForm">
+        <div class="form-group">
+            <label for="account">Account:</label>
+            <select class="form-control" id="account" name="account" required></select>
+        </div>
+        <div class="form-group">
+            <label for="balance">Balance:</label>
+            <input type="text" class="form-control" id="balance" name="balance" readonly>
+        </div>
+        <div class="form-group">
+            <label for="withdrawAmount">Amount:</label>
+            <input type="number" class="form-control" id="withdrawAmount" placeholder="Enter amount to withdraw" name="withdrawAmount" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <h2>Transfer</h2>
+    <form id="transferForm">
+        <div class="form-group">
+            <label for="transferAccount">From Account:</label>
+            <select class="form-control" id="transferAccount" name="transferAccount" required></select>
+        </div>
+        <div class="form-group">
+            <label for="transferBalance">Balance:</label>
+            <input type="text" class="form-control" id="transferBalance" name="transferBalance" readonly>
+        </div>
+        <div class="form-group">
+            <label for="targetAccount">To Account:</label>
+            <select class="form-control" id="targetAccount" name="targetAccount" required></select>
+        </div>
+        <div class="form-group">
+            <label for="transferAmount">Amount:</label>
+            <input type="number" class="form-control" id="transferAmount" placeholder="Enter amount to transfer" name="transferAmount" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    // Fetch accounts when the page loads
+    window.onload = function() {
+        fetch('http://localhost:9092/bankAccount/getallbankAccounts')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const accountSelect = document.getElementById('account');
+                const transferAccountSelect = document.getElementById('transferAccount');
+                const targetAccountSelect = document.getElementById('targetAccount');
+                data.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account.id;  // Use account ID for unique identification
+                    option.text = `${account.firstName} ${account.lastName} (${account.accountNumber}) - $${account.balance}`;
+                    accountSelect.add(option);
+                    transferAccountSelect.add(option.cloneNode(true));
+                    targetAccountSelect.add(option.cloneNode(true));
+                });
+            })
+            .catch(error => console.error('Error fetching accounts:', error));
+    };
+
+    document.getElementById('account').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        document.getElementById('balance').value = selectedOption.text.split(' - $')[1];
+    });
+
+    document.getElementById('transferAccount').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        document.getElementById('transferBalance').value = selectedOption.text.split(' - $')[1];
+    });
+
+    document.getElementById('withdrawForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const accountId = document.getElementById('account').value;
+        const amount = document.getElementById('withdrawAmount').value;
+        fetch(`http://localhost:9092/bankAccount/withdraw/${accountId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount: amount })
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Withdrawal successful');
+                location.reload();
+                document.getElementById('withdrawForm').reset();
+            })
+            .catch(error => {
+                console.error('Error during withdrawal:', error);
+                alert('Error during withdrawal: ' + error.message);
+            });
+    });
+
+    document.getElementById('transferForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const fromAccountId = document.getElementById('transferAccount').value;
+        const toAccountId = document.getElementById('targetAccount').value;
+        const amount = document.getElementById('transferAmount').value;
+        fetch(`http://localhost:9092/bankAccount/transfer`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fromAccountId: fromAccountId, toAccountId: toAccountId, amount: amount })
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert('Transfer successful');
+                location.reload();
+                document.getElementById('transferForm').reset();
+            })
+            .catch(error => {
+                console.error('Error during transfer:', error);
+                alert('Error during transfer: ' + error.message);
+            });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
